@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Co dnes uvařit?</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--tx:#2b2620;--mut:#7a7167;--ac:#e0622b;--acx:#fff;--line:#e8dfd2;--ok:#2f8f4e;--warn:#b7791f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1815;--card:#26221e;--tx:#f1ebe2;--mut:#a69c90;--ac:#f0804a;--acx:#1b1815;--line:#3a342d;--ok:#5ec27d;--warn:#e0b04f}}
+:root[data-theme="dark"]{--bg:#1b1815;--card:#26221e;--tx:#f1ebe2;--mut:#a69c90;--ac:#f0804a;--acx:#1b1815;--line:#3a342d;--ok:#5ec27d;--warn:#e0b04f}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 18px}
+.bar{display:flex;gap:6px;margin-bottom:20px}
+.bar i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.bar i.on{background:var(--ac)}
+h2{font-size:19px;margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:10px 16px;font:inherit;cursor:pointer}
+.chip.sel{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600}
+.nav{display:flex;gap:10px;margin-top:26px}
+.btn{flex:1;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:600;cursor:pointer;background:var(--ac);color:var(--acx)}
+.btn.sec{background:var(--card);color:var(--tx);border:1.5px solid var(--line)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.card summary{cursor:pointer;list-style:none}
+.card summary::-webkit-details-marker{display:none}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font-weight:650;font-size:17px}
+.meta{color:var(--mut);font-size:14px;white-space:nowrap}
+.tag{font-size:13px;margin-top:4px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}
+.card ol,.card ul{margin:10px 0 0;padding-left:20px}
+.hint{color:var(--mut);font-size:14px;margin-top:10px}
+.note{color:var(--mut);font-size:13px;margin:1px 0 8px}.why{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--bg);font-size:14px}.h3{font-weight:650;margin:24px 0 10px}.hero{background:linear-gradient(135deg,#ff8a4c,#ec5b8b 55%,#7a5cf0);color:#fff;border-radius:22px;padding:18px;margin-bottom:18px}.hero h1{margin:0 0 4px}.hero .sub{color:#fffffff0;margin:0}.btn{background:linear-gradient(135deg,var(--ac),#ec5b8b);color:#fff}.btn.sec{background:var(--card);color:var(--tx)}.empty{text-align:center;color:var(--mut);padding:30px 0}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero"><h1>🥗 Zdravě a chytře</h1>
+  <p class="sub">Zdravé recepty podle chuti, zásob a času. U každé suroviny se dozvíš, proč je dobrá.</p></div>
+  <div class="bar" id="bar"></div>
+  <div id="view"></div>
+  <p class="hint">Recepty jsou vlastní zpracování. U části z nich je uveden web, který posloužil jako námět. Hodnoty energie a živin jsou orientační.</p>
+  <details class="card"><summary><b>Zdroj nutričních hodnot</b></summary><p class="hint">Hodnoty na 100 g pocházejí z NutriDatabáze ČR, verze 11.26 (energie v kcal, bílkoviny, tuky a využitelné sacharidy). Použité položky:</p><ul class="hint"><li>avokádo: Avokádo</li><li>banán: Banány</li><li>batáty: Brambory sladké (batáty, jamy)</li><li>borůvky: Borůvky</li><li>brambory: Brambory zimní</li><li>brokolice: Brokolice</li><li>celozrnná rýže: Rýže neloupaná (natural)</li><li>celozrnné těstoviny: Těstoviny, bezvaječné, celozrnné</li><li>celozrnný chléb: Chléb pšeničný celozrnný</li><li>chia semínka: není v databázi, vlastní odhad</li><li>cibule: Cibule</li><li>cizrna: Cizrna (sušená, přepočet faktorem 2,6 na vařenou)</li><li>cuketa: Cuketa</li><li>dýně: Dýně, Hokkaidó</li><li>jablko: Jablka</li><li>jogurt: Jogurt bílý, se sníženým obsahem tuku, 1,5 % tuku</li><li>kuře: Maso kuřecí, prsa, bez kůže</li><li>losos: Losos atlantický, filet, bez kůže</li><li>mléko: Mléko polotučné</li><li>mrkev: Mrkev</li><li>okurka: Okurky</li><li>olivový olej: Olej olivový</li><li>ovesné vločky: Vločky ovesné</li><li>ořechy: Ořechy vlašské</li><li>paprika: Paprika zeleninová, červená</li><li>pohanka: Pohanka, loupaná, lámanka</li><li>rajčata: Rajčata</li><li>sýr: Sýr, Eidam, 30 % t. v s.</li><li>tofu: Tofu</li><li>tuňák: Tuňák modroploutvý, filet</li><li>tvaroh: Tvaroh polotučný</li><li>vejce: Vejce slepičí</li><li>zelí: Zelí hlávkové, bílé</li><li>červené fazole: Fazole červené (sušená, přepočet faktorem 2,6 na vařenou)</li><li>česnek: Česnek</li><li>čočka: Čočka</li><li>špenát: Špenát</li><li>žampiony: Žampiony</li></ul></details>
+</main>
+<script>
+var TASTES=["Sladké","Slané","Pikantní","Lehké"];
+var TIMES=[10,20,30,60];
+var N={
+"vejce":"Zdroj kvalitních bílkovin a cholinu, který je důležitý pro mozek a játra.",
+"mléko":"Zdroj vápníku a bílkovin. Vápník potřebují kosti a zuby.",
+"ovesné vločky":"Obsahují beta-glukan, rozpustnou vlákninu, která pomáhá udržet normální hladinu cholesterolu.",
+"jogurt":"Bílý jogurt má živé kultury a bílkoviny. Vybírej ten bez přidaného cukru.",
+"tvaroh":"Hodně bílkovin a málo tuku, takže dlouho zasytí.",
+"banán":"Zdroj draslíku, který podporuje svaly a nervy. Přirozeně sladí, takže nepotřebuješ cukr.",
+"jablko":"Vláknina pektin podporuje trávení. Slupku nelúp, je v ní nejvíc vlákniny.",
+"ořechy":"Zdravé nenasycené tuky. Stačí hrst denně, jsou energeticky bohaté.",
+"avokádo":"Nenasycené tuky a vláknina. Tuk pomáhá tělu vstřebávat vitaminy A, D, E a K.",
+"špenát":"Obsahuje kyselinu listovou, vitamin K a železo. Železo se ze špenátu kvůli šťavelanům vstřebává hůř, vitamin C ve stejném jídle to zlepší.",
+"brokolice":"Vitamin C, vitamin K a vláknina. Krátce ji povař nebo duš, ať zůstane víc živin.",
+"mrkev":"Beta-karoten se v těle mění na vitamin A pro zrak. S trochou tuku se vstřebává lépe.",
+"rajčata":"Obsahují lykopen, antioxidant, který se po tepelné úpravě vstřebává lépe.",
+"cibule":"Obsahuje flavonoidy a prebiotickou vlákninu, která živí střevní bakterie.",
+"česnek":"Alicin vzniká po rozdrcení. Nech česnek asi 10 minut odstát před tepelnou úpravou.",
+"brambory":"Zdroj draslíku a vitaminu C. Vařené nebo pečené jsou zdravější než smažené.",
+"celozrnný chléb":"Víc vlákniny a minerálů než bílé pečivo a déle zasytí.",
+"celozrnné těstoviny":"Víc vlákniny než bílé těstoviny, takže pomaleji zvyšují hladinu cukru v krvi.",
+"celozrnná rýže":"Má zachovanou slupku a klíček, proto obsahuje víc vlákniny a hořčíku než bílá rýže.",
+"čočka":"Rostlinné bílkoviny, železo a vláknina. Nemusí se předem namáčet.",
+"cizrna":"Rostlinné bílkoviny a vláknina. Energii uvolňuje pomalu, takže dlouho zasytí.",
+"kuře":"Libové bílkoviny. Bez kůže má méně tuku. Peč nebo vař místo smažení.",
+"sýr":"Zdroj vápníku a bílkovin, ale je slaný a tučný. Stačí malé množství.",
+"olivový olej":"Obsahuje nenasycené mastné kyseliny a polyfenoly. Hodí se do salátu i na vaření místo másla."
+};
+var ING=Object.keys(N);
+var R=[
+["Banánové ovesné palačinky",["Sladké","Lehké"],20,["vejce","banán","ovesné vločky"],["Rozmixuj vločky, banán a vejce na těsto.","Nech 5 minut nabobtnat.","Smaž na pánvi na minimu tuku z obou stran."],"Bez přidaného cukru: sladkost dodá banán a vločky přidají vlákninu."],
+["Ovesná kaše s jablkem",["Sladké","Lehké"],10,["ovesné vločky","mléko","jablko"],["Vločky uvař v mléce 5 minut.","Přidej nastrouhané jablko i se slupkou a promíchej."],"Pomalé sacharidy a vláknina drží energii na dlouho, bez cukru."],
+["Tvaroh s banánem a ořechy",["Sladké","Lehké"],5,["tvaroh","banán","ořechy"],["Banán rozmačkej vidličkou.","Smíchej s tvarohem a posyp nasekanými ořechy."],"Hodně bílkovin a zdravých tuků, minimum cukru."],
+["Jogurt s vločkami a ořechy",["Sladké","Lehké"],5,["jogurt","ovesné vločky","ořechy","jablko"],["Jogurt smíchej s vločkami.","Přidej nastrouhané jablko a ořechy."],"Probiotika, vláknina a bílkoviny v jedné misce."],
+["Pečené jablko s ořechy",["Sladké"],30,["jablko","ořechy","ovesné vločky"],["Jablko vydlab a naplň ořechy s vločkami.","Peč 25 minut při 180 °C."],"Dezert bez cukru a bez smažení."],
+["Míchaná vejce se špenátem",["Slané"],10,["vejce","špenát","olivový olej"],["Špenát krátce orestuj na olivovém oleji.","Přilej rozšlehaná vejce a míchej do zhoustnutí."],"Místo šunky a másla zelenina a nenasycený tuk."],
+["Celozrnný toast s avokádem a vejcem",["Slané"],10,["celozrnný chléb","avokádo","vejce"],["Chléb opeč.","Namaž rozmačkaným avokádem.","Navrch dej vařené nebo poché vejce."],"Celozrnné pečivo a zdravé tuky místo másla a uzenin."],
+["Celozrnné těstoviny s brokolicí",["Slané","Pikantní"],20,["celozrnné těstoviny","brokolice","česnek","olivový olej"],["Těstoviny uvař v osolené vodě, brokolici přidej na posledních 3 minuty.","Na oleji krátce opeč česnek.","Vše promíchej."],"Víc vlákniny a zelenina v jednom jídle."],
+["Šakšuka",["Pikantní","Slané"],25,["vejce","rajčata","cibule","česnek","olivový olej"],["Opeč cibuli a česnek, přidej rajčata a duš 10 minut.","Vbij vejce a nech zatuhnout pod pokličkou."],"Zelenina plus bílkoviny. Lykopen z rajčat se po tepelné úpravě vstřebává lépe."],
+["Čočková polévka",["Slané"],35,["čočka","mrkev","cibule","česnek"],["Orestuj cibuli, česnek a mrkev.","Přidej čočku a vodu, vař 25 minut."],"Rostlinné bílkoviny a vláknina, málo tuku."],
+["Pečené kuře se zeleninou",["Slané"],40,["kuře","brambory","mrkev","olivový olej"],["Vše nakrájej, zakápni olejem.","Peč 35 minut při 200 °C."],"Pečení místo smažení šetří tuk a zachová živiny."],
+["Cizrnový salát",["Lehké","Slané"],10,["cizrna","rajčata","cibule","olivový olej"],["Smíchej cizrnu, nakrájená rajčata a cibuli.","Zakápni olejem a osol."],"Rostlinné bílkoviny a vláknina, bez tepelné úpravy."],
+["Salát s rajčaty a sýrem",["Lehké","Slané"],10,["rajčata","sýr","cibule","olivový olej"],["Nakrájej rajčata, sýr a cibuli.","Zakápni olejem."],"Čerstvá zelenina a jen malé množství sýra."],
+["Pikantní cizrna s rajčaty",["Pikantní","Slané"],25,["cizrna","rajčata","cibule","česnek","olivový olej"],["Opeč cibuli a česnek.","Přidej rajčata a cizrnu, duš 15 minut."],"Levné, sytící a bohaté na rostlinné bílkoviny."],
+["Kuře s celozrnnou rýží",["Slané"],40,["kuře","celozrnná rýže","brokolice"],["Rýži uvař asi 25 minut.","Kuře uduš a brokolici přidej na posledních 5 minut.","Podávej dohromady."],"Libové maso, pomalé sacharidy a zelenina."],
+["Zeleninová omeleta",["Slané","Lehké"],15,["vejce","špenát","rajčata","olivový olej"],["Rajčata nakrájej a se špenátem krátce orestuj na olivovém oleji.","Zalij rozšlehanými vejci a nech zatuhnout pod pokličkou."],"Víc zeleniny a méně tuku než klasická omeleta se slaninou."],
+["Pečené brambory s česnekovým dipem",["Slané"],40,["brambory","česnek","olivový olej","jogurt"],["Brambory ve slupce nakrájej na měsíčky, zakápni olejem a peč 30 minut při 200 °C.","Jogurt smíchej s prolisovaným česnekem a podávej jako dip."],"Pečení místo smažení a jogurtový dip místo majonézy."],
+["Kuřecí salát s jogurtovou zálivkou",["Lehké","Slané"],25,["kuře","jogurt","rajčata","cibule"],["Kuře uvař nebo upeč a nakrájej na kousky.","Smíchej s rajčaty, cibulí a jogurtem."],"Libové maso a jogurt místo majonézové zálivky."],
+["Ovesné lívance s tvarohem",["Sladké"],20,["ovesné vločky","tvaroh","vejce"],["Vločky, tvaroh a vejce smíchej na hustší těsto.","Smaž na pánvi na minimu tuku."],"Bílkoviny a vláknina, bez přidaného cukru."],
+["Pečená brokolice se sýrem",["Slané"],25,["brokolice","sýr","česnek","olivový olej"],["Brokolici rozdělej na růžičky, zakápni olejem s česnekem.","Peč 15 minut při 200 °C, posyp sýrem a dopeč."],"Zelenina jako hlavní jídlo a jen malé množství sýra."],
+["Avokádový toast s rajčaty",["Slané","Lehké"],10,["celozrnný chléb","avokádo","rajčata"],["Chléb opeč a namaž rozmačkaným avokádem.","Navrch dej plátky rajčat."],"Celozrnné pečivo a nenasycené tuky z avokáda."],
+["Mrkvový salát s jablkem a ořechy",["Sladké","Lehké"],10,["mrkev","jablko","ořechy","jogurt"],["Mrkev a jablko nastrouhej.","Smíchej s jogurtem a posyp nasekanými ořechy."],"Vláknina a vitaminy, sladkost z ovoce místo cukru."],
+["Rýžová kaše s banánem",["Sladké"],30,["celozrnná rýže","mléko","banán"],["Rýži vař v mléce asi 25 minut do změknutí.","Přidej rozmačkaný banán."],"Celozrnná rýže zasytí déle, sladkost dodá ovoce."],
+["Cizrnové placky",["Slané"],25,["cizrna","vejce","cibule","olivový olej"],["Cizrnu rozmačkej, přidej vejce a nadrobno nakrájenou cibuli.","Smaž malé placky na troše oleje."],"Rostlinné bílkoviny a vláknina, málo tuku."],
+["Kuřecí nudličky s brokolicí",["Slané","Pikantní"],25,["kuře","brokolice","česnek","olivový olej"],["Kuře nakrájej na nudličky a opeč na oleji.","Přidej brokolici a česnek, duš 8 minut."],"Libové maso a zelenina, příprava na minimu tuku."]
+];
+var NU={"vejce":[143,12.5,10,.7],"mléko":[47,3.4,1.5,4.8],"ovesné vločky":[372,13,7,59],"jogurt":[61,3.5,3.3,4.7],"tvaroh":[98,12,4,3],"banán":[89,1.1,.3,22],"jablko":[52,.3,.2,13.8],"ořechy":[654,15,65,7],"avokádo":[160,2,15,8.5],"špenát":[23,2.9,.4,3.6],"brokolice":[34,2.8,.4,6.6],"mrkev":[41,.9,.2,9.6],"rajčata":[18,.9,.2,3.9],"cibule":[40,1.1,.1,9.3],"česnek":[149,6.4,.5,33],"brambory":[77,2,.1,17.5],"celozrnný chléb":[247,9,3.4,41],"celozrnné těstoviny":[352,13,2.5,67],"celozrnná rýže":[362,7.5,2.7,76],"čočka":[352,25,1.1,60],"cizrna":[164,8.9,2.6,27.4],"kuře":[110,23,1.5,0],"sýr":[264,14,21,4],"olivový olej":[884,0,100,0]};
+var AM={"Banánové ovesné palačinky":[100,120,50],"Ovesná kaše s jablkem":[50,200,100],"Tvaroh s banánem a ořechy":[150,100,20],"Jogurt s vločkami a ořechy":[150,30,15,100],"Pečené jablko s ořechy":[200,20,20],"Míchaná vejce se špenátem":[100,80,5],"Celozrnný toast s avokádem a vejcem":[70,70,50],"Celozrnné těstoviny s brokolicí":[80,150,5,10],"Šakšuka":[100,300,80,5,10],"Čočková polévka":[60,100,60,5],"Pečené kuře se zeleninou":[150,200,100,10],"Cizrnový salát":[150,150,40,10],"Salát s rajčaty a sýrem":[250,50,40,10],"Pikantní cizrna s rajčaty":[200,250,80,5,10],"Kuře s celozrnnou rýží":[150,70,150],"Zeleninová omeleta":[100,60,100,5],"Pečené brambory s česnekovým dipem":[250,5,10,80],"Kuřecí salát s jogurtovou zálivkou":[120,60,150,30],"Ovesné lívance s tvarohem":[50,100,50],"Pečená brokolice se sýrem":[250,40,5,5],"Avokádový toast s rajčaty":[70,60,100],"Mrkvový salát s jablkem a ořechy":[120,100,15,50],"Rýžová kaše s banánem":[50,250,100],"Cizrnové placky":[150,50,40,5],"Kuřecí nudličky s brokolicí":[150,150,5,10]};
+Object.assign(N,{
+"paprika":"Dobrý zdroj vitaminu C, který podporuje vstřebávání železa z rostlinné stravy.",
+"cuketa":"Skoro samá voda a málo energie, zvětší objem jídla bez mnoha kalorií.",
+"žampiony":"Obsahují vitaminy skupiny B a draslík a mají málo energie.",
+"okurka":"Z velké části voda a málo energie. Slupka obsahuje vlákninu, proto ji nelúp.",
+"borůvky":"Obsahují antokyany, barviva s antioxidačním účinkem. Mražené jsou nutričně srovnatelné s čerstvými.",
+"pohanka":"Přirozeně bez lepku, zdroj hořčíku a rostlinných bílkovin.",
+"červené fazole":"Rostlinné bílkoviny, vláknina a železo. Konzervované odlij a propláchni, snížíš tak obsah soli.",
+"losos":"Zdroj omega-3 mastných kyselin EPA a DHA. Mořské ryby se doporučuje jíst jednou až dvakrát týdně.",
+"tuňák":"Libové bílkoviny a jód. Konzervy bývají slané, vybírej ty ve vlastní šťávě.",
+"tofu":"Rostlinné bílkoviny, vhodné pro vegetariány i vegany. Sleduj, jestli je obohacené o vápník.",
+"chia semínka":"Vláknina a omega-3 mastná kyselina ALA. V tekutině nabobtnají a zasytí."
+});
+Object.assign(NU,{"paprika":[31,1,.3,6],"cuketa":[17,1.2,.3,3.1],"žampiony":[22,3.1,.3,3.3],"okurka":[15,.7,.1,3.6],"borůvky":[57,.7,.3,14.5],"pohanka":[343,13.3,3.4,71.5],"červené fazole":[127,8.7,.5,22.8],"losos":[208,20,13,0],"tuňák":[116,26,1,0],"tofu":[144,17,9,3],"chia semínka":[486,17,31,42]});
+var GR={"🥦 Zelenina":["špenát","brokolice","mrkev","rajčata","cibule","česnek","paprika","cuketa","žampiony","okurka","dýně","zelí"],"🍎 Ovoce":["banán","jablko","avokádo","borůvky"],"🌾 Obiloviny, brambory a luštěniny":["ovesné vločky","celozrnný chléb","celozrnné těstoviny","celozrnná rýže","pohanka","brambory","batáty","čočka","cizrna","červené fazole"],"🍗 Maso, ryby a vejce":["kuře","losos","tuňák","vejce"],"🥛 Mléčné výrobky a tofu":["mléko","jogurt","tvaroh","sýr","tofu"],"🥜 Tuky, ořechy a semínka":["olivový olej","ořechy","chia semínka"]};
+var GC={"🥦 Zelenina":"#3fae6a","🍎 Ovoce":"#ec5b8b","🌾 Obiloviny, brambory a luštěniny":"#c98a1b","🍗 Maso, ryby a vejce":"#e5483a","🥛 Mléčné výrobky a tofu":"#3b82c4","🥜 Tuky, ořechy a semínka":"#7a5cf0"};
+Object.assign(AM,{"Tuňákový salát s okurkou":[80,120,100,10],"Pečený losos se zeleninou":[150,150,100,5],"Fazolové chilli bez masa":[150,200,60,100,5],"Pohanka se žampiony":[70,150,50,8],"Tofu s brokolicí a paprikou":[150,150,80,5,8],"Chia pudink s borůvkami":[25,150,80],"Cuketové placky":[200,50,30,50],"Houbová omeleta":[100,100,5,30]});
+R.push(
+["Tuňákový salát s okurkou",["Lehké","Slané"],10,["tuňák","okurka","rajčata","olivový olej"],["Tuňáka sceď, okurku a rajčata nakrájej.","Smíchej a zakápni olejem."],"Libové bílkoviny a čerstvá zelenina bez tepelné úpravy."],
+["Pečený losos se zeleninou",["Slané"],30,["losos","cuketa","paprika","olivový olej"],["Zeleninu nakrájej a zakápni olejem.","Přidej lososa a peč 20 minut při 190 °C."],"Omega-3 mastné kyseliny z ryby a hodně zeleniny."],
+["Fazolové chilli bez masa",["Pikantní","Slané"],35,["červené fazole","rajčata","cibule","paprika","česnek"],["Orestuj cibuli, papriku a česnek.","Přidej rajčata a propláchnuté fazole, vař 20 minut."],"Rostlinné bílkoviny a vláknina místo mletého masa."],
+["Pohanka se žampiony",["Slané"],25,["pohanka","žampiony","cibule","olivový olej"],["Pohanku uvař asi 15 minut.","Žampiony s cibulí opeč na oleji a smíchej s pohankou."],"Přirozeně bezlepkové jídlo se zeleninou a minerály."],
+["Tofu s brokolicí a paprikou",["Slané","Pikantní"],20,["tofu","brokolice","paprika","česnek","olivový olej"],["Tofu nakrájej na kostky a opeč dozlatova.","Přidej zeleninu a česnek, duš 8 minut."],"Rostlinná bílkovina a zelenina, vhodné pro vegany."],
+["Chia pudink s borůvkami",["Sladké","Lehké"],10,["chia semínka","mléko","borůvky"],["Chia semínka smíchej s mlékem.","Nech přes noc v lednici nabobtnat a navrch dej borůvky."],"Vláknina a omega-3 bez přidaného cukru (příprava přes noc)."],
+["Cuketové placky",["Slané"],25,["cuketa","vejce","ovesné vločky","jogurt"],["Cuketu nastrouhej a vymačkej.","Smíchej s vejcem a vločkami, smaž na minimu tuku.","Podávej s jogurtem."],"Zelenina jako základ placek a jogurt místo smetanové omáčky."],
+["Houbová omeleta",["Slané","Lehké"],15,["vejce","žampiony","olivový olej","cibule"],["Žampiony s cibulí orestuj na oleji.","Zalij rozšlehanými vejci a nech zatuhnout."],"Bílkoviny a málo energie, houby dodají objem."]
+);
+Object.assign(N,{"dýně":"Zdroj beta-karotenu (provitaminu A) a draslíku a má málo energie. Hokkaido se nemusí loupat.","batáty":"Bohaté na beta-karoten (provitamin A), vlákninu a draslík.","zelí":"Zdroj vitaminu C, vitaminu K a vlákniny, s velmi malým obsahem energie."});
+Object.assign(NU,{"dýně":[31,1.1,.2,6.5],"batáty":[86,1.6,.1,20],"zelí":[25,1.3,.1,5.8]});
+Object.assign(AM,{"Dýňové kari s kuřetem":[150,200,50,5,8,100],"Tomatová polévka s fazolemi":[120,250,50,5],"Fazolový bowl s rýží":[120,60,80,50,80],"Pečené tofu s pohankou":[150,60,120,8],"Cizrna v jogurtové omáčce":[150,80,60,5,8],"Zelná omeleta":[150,100,50,5],"Pečené batáty s tvarohovým dipem":[250,80,5,5],"Dýňovo-batátový krém":[200,150,50,5,5],"Kuře na žampionech":[150,150,40,50,5],"Okurkový salát s jogurtem":[200,100,3],"Mléčná rýže s dýní":[50,250,100],"Brokolicové krokety z trouby":[200,50,40,30,80],"Těstovinový salát s kuřetem":[60,100,50,100,80,40],"Zapékané kuře se zeleninou":[150,150,100,30]});
+R.push(
+["Dýňové kari s kuřetem",["Slané","Pikantní"],35,["kuře","dýně","cibule","česnek","olivový olej","rajčata"],["Kuře nakrájej a opeč na oleji s cibulí a česnekem.","Přidej kostky dýně, rajčata a kari koření, duš 20 minut."],"Hodně zeleniny a libové maso, příprava bez smetany.","Aktin"],
+["Tomatová polévka s fazolemi",["Slané","Lehké"],20,["červené fazole","rajčata","cibule","česnek"],["Cibuli a česnek orestuj, přidej rajčata a trochu vody.","Vař 10 minut, přidej propláchnuté fazole a krátce prohřej."],"Rostlinné bílkoviny a vláknina, minimum tuku.","STOBklub"],
+["Fazolový bowl s rýží",["Slané"],25,["červené fazole","celozrnná rýže","paprika","avokádo","rajčata"],["Rýži uvař, fazole propláchni a prohřej.","Navrch dej nakrájenou papriku, rajčata a avokádo."],"Kombinace luštěniny a obiloviny dodá plnohodnotné bílkoviny.","Jíme Jinak"],
+["Pečené tofu s pohankou",["Slané"],30,["tofu","pohanka","brokolice","olivový olej"],["Tofu nakrájej, zakápni olejem a peč 20 minut při 200 °C.","Pohanku uvař, brokolici krátce povař a podávej dohromady."],"Rostlinná bílkovina a bezlepková příloha.","Jíme Jinak"],
+["Cizrna v jogurtové omáčce",["Slané"],20,["cizrna","špenát","jogurt","česnek","olivový olej"],["Na oleji orestuj česnek, přidej cizrnu a špenát.","Stáhni z plotny a vmíchej jogurt."],"Jogurt místo smetany šetří tuk a přidá bílkoviny.","Jíme Jinak"],
+["Zelná omeleta",["Slané","Lehké"],20,["zelí","vejce","mrkev","olivový olej"],["Zelí a mrkev nastrouhej a smíchej s vejci.","Smaž z obou stran na troše oleje."],"Hodně zeleniny a málo energie.","Poznej své zdraví"],
+["Pečené batáty s tvarohovým dipem",["Slané"],40,["batáty","tvaroh","česnek","olivový olej"],["Batáty nakrájej na měsíčky, zakápni olejem a peč 30 minut při 200 °C.","Tvaroh smíchej s česnekem a podávej jako dip."],"Beta-karoten z batátů a bílkoviny z tvarohu bez smažení."],
+["Dýňovo-batátový krém",["Slané","Lehké"],35,["dýně","batáty","cibule","česnek","olivový olej"],["Zeleninu nakrájej a opeč s cibulí a česnekem.","Zalij vodou, vař 20 minut a rozmixuj."],"Krémová polévka bez smetany, jen ze zeleniny.","Poznej své zdraví"],
+["Kuře na žampionech",["Slané"],30,["kuře","žampiony","cibule","jogurt","olivový olej"],["Kuře opeč na oleji, přidej cibuli a žampiony.","Duš 15 minut a nakonec vmíchej jogurt."],"Lehčí varianta houbové omáčky bez smetany.","Poznej své zdraví"],
+["Okurkový salát s jogurtem",["Lehké"],10,["okurka","jogurt","česnek"],["Okurku nakrájej na plátky.","Smíchej s jogurtem a utřeným česnekem."],"Osvěžující svačina s minimem energie.","Poznej své zdraví"],
+["Mléčná rýže s dýní",["Sladké"],35,["celozrnná rýže","mléko","dýně"],["Rýži vař v mléce asi 25 minut.","Přidej nastrouhanou dýni a dovař."],"Celozrnná rýže a zelenina místo cukru.","Poznej své zdraví"],
+["Brokolicové krokety z trouby",["Slané"],35,["brokolice","vejce","ovesné vločky","sýr","jogurt"],["Uvařenou brokolici rozmačkej, smíchej s vejcem, vločkami a sýrem.","Tvaruj krokety a peč 20 minut při 200 °C, podávej s jogurtem."],"Pečení místo smažení a zelenina jako základ.","STOBklub"],
+["Těstovinový salát s kuřetem",["Slané","Lehké"],25,["celozrnné těstoviny","kuře","vejce","rajčata","okurka","jogurt"],["Uvař těstoviny, vejce a kuře a nakrájej je.","Smíchej se zeleninou a jogurtovou zálivkou."],"Celozrnné těstoviny a jogurt místo majonézy.","Poznej své zdraví"],
+["Zapékané kuře se zeleninou",["Slané"],60,["kuře","brambory","brokolice","sýr"],["Kuře a brambory nakrájej, dej do zapékací mísy.","Peč 35 minut při 190 °C, přidej brokolici a sýr a dopeč 10 minut."],"Celé jídlo z jedné mísy, bez smažení.","Aktin"]
+);
+Object.assign(NU,{"vejce":[138.0,12.5,9.2,1.3],"mléko":[46.0,3.3,1.5,4.8],"ovesné vločky":[353.0,13.1,5.8,55.8],"jogurt":[51.0,3.9,1.5,4.3],"tvaroh":[109.0,12.9,4.7,3.6],"banán":[98.0,1.1,0.3,21.6],"jablko":[52.0,0.4,0.4,10.5],"ořechy":[664.0,16.3,61.2,6.6],"avokádo":[166.0,1.5,16.5,1.4],"špenát":[25.0,2.6,0.4,1.7],"brokolice":[37.0,4.4,0.3,2.0],"mrkev":[36.0,1.0,0.2,6.1],"rajčata":[21.0,0.9,0.2,3.1],"cibule":[39.0,1.4,0.3,6.6],"česnek":[150.0,6.3,0.4,28.9],"brambory":[78.0,2.4,0.3,15.6],"celozrnný chléb":[229.0,8.9,2.0,39.8],"celozrnné těstoviny":[337.0,12.8,1.3,64.4],"celozrnná rýže":[354.0,8.7,2.6,72.8],"čočka":[325.0,23.6,0.7,48.5],"kuře":[102.0,22.8,1.2,0.0],"sýr":[265.0,28.9,16.0,1.3],"olivový olej":[900.0,0.0,100.0,0.0],"paprika":[29.0,1.3,0.4,4.3],"cuketa":[14.0,0.8,0.1,1.8],"žampiony":[27.0,2.9,0.3,1.4],"okurka":[12.0,0.8,0.1,1.5],"borůvky":[51.0,0.7,0.6,8.9],"pohanka":[345.0,11.1,2.1,68.3],"losos":[158.0,22.1,7.8,0.0],"tuňák":[104.0,24.5,0.6,0.0],"tofu":[76.0,7.8,4.2,1.2],"dýně":[37.0,1.1,0.6,5.7],"batáty":[66.0,1.1,0.2,13.6],"zelí":[29.0,1.6,0.2,4.1],"cizrna":[118.5,7.7,2.2,10.5],"červené fazole":[106.2,7.2,0.7,10.8],"chia semínka":[486,17,31,8]});
+function calc(r){var t=[0,0,0,0];r[3].forEach(function(i,x){var g=AM[r[0]][x]/100;for(var k=0;k<4;k++)t[k]+=NU[i][k]*g});return{kcal:Math.round(t[0]),kj:Math.round(t[0]*4.184),p:Math.round(t[1]),f:Math.round(t[2]),c:Math.round(t[3])}}
+var MEAT=["kuře","losos","tuňák"],GLUTEN=["ovesné vločky","celozrnný chléb","celozrnné těstoviny"];
+var TIPS=["Energii najdeš na etiketě v kJ i kcal. Přepočet: 1 kcal je přibližně 4,184 kJ.","Energie živin: 1 g sacharidů nebo bílkovin dává asi 4 kcal, 1 g tuku asi 9 kcal.","Na etiketě jsou suroviny seřazené podle množství. První surovina je v potravině zastoupená nejvíc.","Celozrnné potraviny mají víc vlákniny, a proto obvykle zasytí na delší dobu než rafinované.","Pocit sytosti se dostaví se zpožděním, proto pomalejší jedení pomáhá lépe vnímat, kdy je dost.","Zelenina vařená krátce nebo dušená si zachová víc vitaminů rozpustných ve vodě než zelenina dlouho vařená.","Bílkoviny je výhodné rozložit do více jídel během dne, ne jen do jednoho.","Tuky jsou energeticky nejbohatší živina, proto i zdravé tuky (olej, ořechy) dávkuj po malých porcích."];
+var tipI=Math.floor(Date.now()/864e5)%TIPS.length;
+function isVeg(r){return !r[3].some(function(i){return MEAT.indexOf(i)>=0})}
+function isGF(r){return !r[3].some(function(i){return GLUTEN.indexOf(i)>=0})}
+var S={step:0,taste:[],ing:[],time:30,diet:[]};
+var bar=document.getElementById("bar"),view=document.getElementById("view");
+var TC={"Sladké":"#ec5b8b","Slané":"#e8921c","Pikantní":"#e5483a","Lehké":"#3fae6a"},EM={"Sladké":"🍓","Slané":"🧂","Pikantní":"🌶️","Lehké":"🥗"};
+function chip(label,on,fn,col){var b=document.createElement("button");b.className="chip"+(on?" sel":"");b.textContent=label;b.onclick=fn;if(on&&col){b.style.background=col;b.style.borderColor=col;b.style.color="#fff"}return b}
+function toggle(arr,v){var i=arr.indexOf(v);if(i<0)arr.push(v);else arr.splice(i,1)}
+function nav(back,nextLabel,next){
+  var d=document.createElement("div");d.className="nav";
+  if(back){var a=document.createElement("button");a.className="btn sec";a.textContent="Zpět";a.onclick=function(){S.step--;draw()};d.appendChild(a)}
+  var n=document.createElement("button");n.className="btn";n.textContent=nextLabel;n.onclick=next;d.appendChild(n);return d}
+function draw(){
+  bar.innerHTML="";for(var i=0;i<3;i++){var x=document.createElement("i");if(i<=Math.min(S.step,2))x.className="on";bar.appendChild(x)}
+  view.innerHTML="";window.scrollTo(0,0);
+  if(S.step===0)step0();else if(S.step===1)step1();else if(S.step===2)step2();else results();
+}
+function head(t){var h=document.createElement("h2");h.textContent=t;view.appendChild(h)}
+function step0(){
+  head("Na co máš chuť?");
+  var c=document.createElement("div");c.className="chips";
+  TASTES.forEach(function(t){c.appendChild(chip(EM[t]+" "+t,S.taste.indexOf(t)>=0,function(){toggle(S.taste,t);draw()},TC[t]))});
+  view.appendChild(c);
+  var h=document.createElement("div");h.className="hint";h.textContent="Můžeš vybrat víc možností, nebo žádnou.";view.appendChild(h);
+  var tp=document.createElement("div");tp.className="card";tp.style.marginTop="22px";
+  var th=document.createElement("div");th.className="name";th.textContent="Víš, že…";
+  var tt=document.createElement("div");tt.style.margin="6px 0 10px";tt.textContent=TIPS[tipI];
+  var tb=document.createElement("button");tb.className="chip";tb.textContent="Další tip";tb.onclick=function(){tipI=(tipI+1)%TIPS.length;draw()};
+  tp.appendChild(th);tp.appendChild(tt);tp.appendChild(tb);view.appendChild(tp);
+  view.appendChild(nav(false,"Další",function(){S.step=1;draw()}));
+}
+function step1(){
+  head("Jaké potraviny máš doma?");
+  var c=document.createElement("div");c.className="chips";
+  Object.keys(GR).forEach(function(g){var gh=document.createElement("div");gh.className="h3";gh.style.margin="16px 0 8px";gh.textContent=g;view.appendChild(gh);var gc=document.createElement("div");gc.className="chips";GR[g].forEach(function(t){gc.appendChild(chip(t,S.ing.indexOf(t)>=0,function(){toggle(S.ing,t);draw()},GC[g]))});view.appendChild(gc)});
+  var h=document.createElement("div");h.className="hint";h.textContent="Sůl, pepř a voda se počítají automaticky.";view.appendChild(h);
+  view.appendChild(nav(true,"Další",function(){S.step=2;draw()}));
+}
+function step2(){
+  head("Kolik máš času na přípravu?");
+  var c=document.createElement("div");c.className="chips";
+  TIMES.forEach(function(t){c.appendChild(chip("Do "+t+" min",S.time===t,function(){S.time=t;draw()}))});
+  view.appendChild(c);
+  var dh=document.createElement("div");dh.className="h3";dh.textContent="Omezení";view.appendChild(dh);
+  var dc=document.createElement("div");dc.className="chips";
+  ["Vegetariánské","Bez lepku"].forEach(function(t){dc.appendChild(chip(t,S.diet.indexOf(t)>=0,function(){toggle(S.diet,t);draw()}))});
+  view.appendChild(dc);
+  var dn=document.createElement("div");dn.className="hint";dn.textContent="Ovesné vločky počítáme jako zdroj lepku, pokud nejsou výslovně označené bez lepku.";view.appendChild(dn);
+  view.appendChild(nav(true,"Ukaž recepty",function(){S.step=3;draw()}));
+}
+function results(){
+  head("Recepty pro tebe");var hn=document.createElement("div");hn.className="hint";hn.style.margin="0 0 12px";hn.textContent="Hodnoty na 1 porci jsou vypočtené z NutriDatabáze ČR (v11.26). Těstoviny, rýže, pohanka a čočka jsou v suchém stavu, cizrna a fazole vařené. Hodnoty jsou orientační a nejde o individuální dietní doporučení.";view.appendChild(hn);
+  var list=R.filter(function(r){
+    if(r[2]>S.time)return false;
+    if(S.taste.length&&!r[1].some(function(t){return S.taste.indexOf(t)>=0}))return false;
+    if(S.diet.indexOf("Vegetariánské")>=0&&!isVeg(r))return false;
+    if(S.diet.indexOf("Bez lepku")>=0&&!isGF(r))return false;
+    if(S.ing.length&&!r[3].some(function(i){return S.ing.indexOf(i)>=0}))return false;
+    return true;
+  }).map(function(r){return{r:r,miss:r[3].filter(function(i){return S.ing.indexOf(i)<0})}})
+   .sort(function(a,b){return a.miss.length-b.miss.length||a.r[2]-b.r[2]});
+  if(!list.length){var e=document.createElement("div");e.className="empty";e.textContent="Nic jsme nenašli. Zkus víc času nebo méně podmínek.";view.appendChild(e)}
+  list.forEach(function(o){
+    var r=o.r,d=document.createElement("details");d.className="card";
+    var s=document.createElement("summary");
+    var row=document.createElement("div");row.className="row";
+    var n=document.createElement("span");n.className="name";n.textContent=r[0];
+    var m=document.createElement("span");m.className="meta";var K=calc(r);d.style.borderLeft="6px solid "+TC[r[1][0]];m.textContent=r[2]+" min · "+K.kcal+" kcal";
+    row.appendChild(n);row.appendChild(m);s.appendChild(row);
+    var t=document.createElement("div");t.className="tag "+(o.miss.length?"warn":"ok");
+    t.textContent=o.miss.length?"Chybí: "+o.miss.join(", "):"Máš všechno doma";
+    s.appendChild(t);var lb=[];if(isVeg(r))lb.push("vegetariánské");if(isGF(r))lb.push("bez lepku");var tg=document.createElement("div");tg.className="tag meta";tg.textContent=lb.join(" · ");s.appendChild(tg);d.appendChild(s);
+    var u=document.createElement("ul");
+    r[3].forEach(function(i,x){var li=document.createElement("li");var b=document.createElement("b");b.textContent=i+" · "+AM[r[0]][x]+" g";var nt=document.createElement("div");nt.className="note";nt.textContent=N[i];li.appendChild(b);li.appendChild(nt);u.appendChild(li)});
+    d.appendChild(u);
+    var ol=document.createElement("ol");
+    r[4].forEach(function(i){var li=document.createElement("li");li.textContent=i;ol.appendChild(li)});
+    d.appendChild(ol);var nu=document.createElement("div");nu.className="why";nu.style.background="rgba(255,107,61,.14)";var nl=document.createElement("b");nl.textContent="🔥 Energie na 1 porci";var nt2=document.createElement("div");nt2.textContent=K.kcal+" kcal ("+K.kj+" kJ) · bílkoviny "+K.p+" g · tuky "+K.f+" g · sacharidy "+K.c+" g";nu.appendChild(nl);nu.appendChild(nt2);d.appendChild(nu);var w=document.createElement("div");w.className="why";w.style.background="rgba(63,174,106,.16)";var wl=document.createElement("b");wl.textContent="💚 Čím je zdravější";var wt=document.createElement("div");wt.textContent=r[5];w.appendChild(wl);w.appendChild(wt);d.appendChild(w);if(r[6]){var sr=document.createElement("div");sr.className="hint";sr.textContent="Námět: "+r[6]+" (vlastní zpracování)";d.appendChild(sr)}view.appendChild(d);
+  });
+  view.appendChild(nav(true,"Začít znovu",function(){S={step:0,taste:[],ing:[],time:30,diet:[]};draw()}));
+}
+draw();
+</script>
+</body>
+</html>
